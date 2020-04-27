@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { MapContext } from '~/Context/MapContext';
+import { MarkerContext } from '~/Context/MarkerContext';
 
 const MapContainer = styled.div`
   width: 100vw;
@@ -9,6 +10,7 @@ const MapContainer = styled.div`
 
 const KakaoMap: React.FC = () => {
   const { setMap, center, posMove } = useContext(MapContext);
+  const { renderMarkers } = useContext(MarkerContext);
   useEffect(() => {
     const mapContainer = document.getElementById('MapContainer');
     const mapOption = {
@@ -28,6 +30,9 @@ const KakaoMap: React.FC = () => {
       };
       posMove && posMove(curPos);
     });
+
+    renderMarkers && renderMarkers(map);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [center]);
 

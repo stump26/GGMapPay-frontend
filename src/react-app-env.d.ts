@@ -30,8 +30,8 @@ declare module '*.jpeg' {
 }
 
 declare module '*.png' {
-  const src: string;
-  export default src;
+  const src: any;
+  export default any;
 }
 
 declare module '*.webp' {

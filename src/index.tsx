@@ -3,12 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import { MapContextProvider } from '~/Context/MapContext';
+import { MarkerContextProvider } from '~/Context/MarkerContext';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
     <MapContextProvider>
-      <App />
+      <MarkerContextProvider>
+        <App />
+      </MarkerContextProvider>
     </MapContextProvider>
   </React.StrictMode>,
   document.getElementById('root'),
