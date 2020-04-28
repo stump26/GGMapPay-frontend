@@ -1,7 +1,6 @@
-type IMap = any;
 interface IMapContext {
-  map?: IMap;
   center?: PositionType;
-  posMove?: (pos: PositionType) => void;
-  setMap?: React.Dispatch<any>;
+  posMove?: (map: any) => void;
+  mapInnerContents?: React.ReactElement;
+  setMapinnerContents?: React.Dispatch;
 }

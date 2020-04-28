@@ -1,43 +1,35 @@
 import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
-
+import { Map } from 'kakao-map-react';
 import { MapContext } from '~/Context/MapContext';
 import { MarkerContext } from '~/Context/MarkerContext';
 
-const MapContainer = styled.div`
+const MapContainer = styled(Map)`
   width: 100vw;
   height: 100vh;
 `;
 
 const KakaoMap: React.FC = () => {
-  const { setMap, center, posMove } = useContext(MapContext);
+  const { center, mapInnerContents, posMove } = useContext(MapContext);
   const { renderMarkers } = useContext(MarkerContext);
-  useEffect(() => {
-    const mapContainer = document.getElementById('MapContainer');
-    const mapOption = {
-      center: new window.kakao.maps.LatLng(center?.lat, center?.long), // 지도의 중심좌표
-      level: 3, // 지도의 확대 레벨
-    };
-
-    const map = new window.kakao.maps.Map(mapContainer, mapOption);
-
-    setMap && setMap(map);
-
-    window.kakao.maps.event.addListener(map, 'dragend', () => {
-      const latlng = map.getCenter();
-      const curPos: PositionType = {
-        lat: latlng.getLat() as number,
-        long: latlng.getLng() as number,
-      };
-      posMove && posMove(curPos);
-    });
-
-    renderMarkers && renderMarkers(map);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [center]);
-
-  return <MapContainer id="MapContainer" />;
+  console.log('KakaoMap:React.FC -> center', center);
+  return (
+    <MapContainer
+      id="MapContainer"
+      kakaoApiKey={process.env.REACT_APP_KAKAO_JS_KEY}
+      initialPosition={{
+        longitude: center?.longitude,
+        latitude: center?.latitude,
+        level: 3,
+      }}
+      center={{ center }}
+      onDragEnd={(map: any): void => {
+        posMove && posMove(map);
+      }}
+    >
+      {mapInnerContents && mapInnerContents}
+    </MapContainer>
+  );
 };
 
 export default KakaoMap;

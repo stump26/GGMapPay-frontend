@@ -1,34 +1,31 @@
-import React, { useEffect, useState, createContext } from 'react';
+import React, { useState, createContext } from 'react';
 
 const defaultContext: IMapContext = {
-  map: undefined,
   center: undefined,
 };
 
 const MapContext = createContext(defaultContext);
 
 const MapContextProvider: React.FC = ({ children }) => {
-  const [map, setMap] = useState<any>(undefined);
+  const [mapInnerContents, setMapinnerContents] = useState<
+    React.ReactElement | undefined
+  >(undefined);
   const [center, setCenter] = useState<PositionType>({
-    lat: 33.450701,
-    long: 126.570667,
+    latitude: 33.450701,
+    longitude: 126.570667,
   });
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      console.log(position.coords.latitude, position.coords.longitude);
-      setCenter({
-        long: position.coords.longitude,
-        lat: position.coords.latitude,
-      });
+  const posMove = (map: any): void => {
+    console.log('MapContextProvider:React.FC -> map', map);
+    const newCenter = map.getCenter();
+    setCenter({
+      latitude: newCenter.Ha,
+      longitude: newCenter.Ga,
     });
-  }, []);
-
-  const posMove = (pos: PositionType): void => {
-    console.log(pos);
   };
   return (
-    <MapContext.Provider value={{ map, center, posMove, setMap }}>
+    <MapContext.Provider
+      value={{ center, posMove, mapInnerContents, setMapinnerContents }}
+    >
       {children}
     </MapContext.Provider>
   );

@@ -7,7 +7,7 @@ declare global {
   }
 
   type PositionType = {
-    long: number;
-    lat: number;
+    longitude: number;
+    latitude: number;
   };
 }

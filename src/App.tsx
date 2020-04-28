@@ -13,6 +13,8 @@ const MapContainer = styled.div`
   position: fixed;
   top: 0;
   z-index: 9;
+  height: 100vh;
+  width: 100vw;
 `;
 
 function App() {
