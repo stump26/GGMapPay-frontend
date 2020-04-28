@@ -1,0 +1,15 @@
+{
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.formatOnSave": true,
+  "[markdown]": {
+    "editor.formatOnSave": false
+  },
+  "tslint.autoFixOnSave": true,
+  "prettier.configPath": ".prettierrc.js"
+}
