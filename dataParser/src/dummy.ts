@@ -6,12 +6,21 @@ interface StoreInfo {
   storeId: number;
 }
 
-// const client = redis.createClient({
-//   url: 'http://localhost:6379',
-// });
+const client = redis.createClient({
+  url: 'http://localhost:6379',
+});
 
 const onewayID = (hashSize: number): string => {
   return Math.random().toString(36).substr(2, hashSize);
+};
+
+const setRedis = (objectData: any) => {
+  client.geoadd(
+    'store',
+    objectData.REFINE_WGS84_LOGT,
+    objectData.REFINE_WGS84_LAT,
+    JSON.stringify(objectData),
+  );
 };
 
 fs.readFile('assets/dummy.csv', 'utf8', function (err, data) {
@@ -21,8 +30,9 @@ fs.readFile('assets/dummy.csv', 'utf8', function (err, data) {
   let dataArray = data.split(/\r?\n/);
   dataArray.shift();
   dataArray.map(async (data) => {
-    console.log('data', data);
-    const lineData = data.split(',');
+    const lineData = data
+      .split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/)
+      .map((a) => a.replace(/"|'/, ''));
 
     const objectData = {
       SIGUN_NM: lineData[0],
@@ -37,12 +47,23 @@ fs.readFile('assets/dummy.csv', 'utf8', function (err, data) {
       DATA_STD_DE: lineData[9],
     };
 
+    let coord;
     if (!objectData.REFINE_WGS84_LOGT || !objectData.REFINE_WGS84_LAT) {
-      if (!objectData.REFINE_ROADNM_ADDR) {
-        // console.log(lineData[1], await getCoord(objectData.REFINE_ROADNM_ADDR));
-      } else if (!objectData.REFINE_LOTNO_ADDR) {
-        console.log(objectData);
+      if (objectData.REFINE_ROADNM_ADDR) {
+        coord = await getCoord(objectData.REFINE_ROADNM_ADDR);
+      } else if (objectData.REFINE_LOTNO_ADDR) {
+        coord = await getCoord(objectData.REFINE_LOTNO_ADDR);
       }
+      if (coord) {
+        objectData.REFINE_WGS84_LOGT = coord.longitude.toString();
+        objectData.REFINE_WGS84_LAT = coord.latitude.toString();
+
+        setRedis(objectData);
+      }
+    } else {
+      setRedis(objectData);
     }
   });
+  console.log('jobend');
+  return;
 });

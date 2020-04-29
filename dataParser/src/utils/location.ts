@@ -63,9 +63,17 @@ const coordTransform = (x: number, y: number) => {
 };
 
 export const getCoord = async (doroJuso: string) => {
-  const doroInfo = await searchDoro(doroJuso);
-  const coord = await searchCOORD(doroInfo.juso[0]);
-  const { entX, entY } = coord.juso[0];
-  const wgs84 = coordTransform(Number(entX), Number(entY));
-  return { longitude: wgs84.x, latitude: wgs84.y };
+  try {
+    const doroInfo = await searchDoro(doroJuso);
+    if (doroInfo.juso[0]) {
+      const coord = await searchCOORD(doroInfo.juso[0]);
+      const { entX, entY } = coord.juso[0];
+      const wgs84 = coordTransform(Number(entX), Number(entY));
+      return { longitude: wgs84.x, latitude: wgs84.y };
+    } else {
+      throw 'juso not found';
+    }
+  } catch (e) {
+    return undefined;
+  }
 };
