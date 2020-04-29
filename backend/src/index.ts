@@ -1,8 +1,8 @@
 import { ApolloServer } from 'apollo-server-express';
-import Express from 'express'; // koa@2
 import BodyParser from 'body-parser';
-import schema from './graphql/schema';
+import Express from 'express'; // koa@2
 import morgan from 'morgan';
+import schema from './graphql/schema';
 
 const app = Express();
 
@@ -25,5 +25,7 @@ const opts = {
 
 app.listen(opts, () => {
   console.log(`✅  Listening on: http://localhost:${opts.port}`);
-  console.log(`🚀Graphql Server Running at http://localhost:${opts.port}`);
+  console.log(
+    `🚀Graphql Server Running at http://localhost:${opts.port}/graphql`,
+  );
 });

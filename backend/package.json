@@ -30,11 +30,13 @@
     "apollo-server-koa": "^2.12.0",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "graphql": "^15.0.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^8.0.8",
     "merge-graphql-schemas": "^1.7.8",
+    "nodemon": "^2.0.3",
     "redis": "^3.0.2"
   }
 }

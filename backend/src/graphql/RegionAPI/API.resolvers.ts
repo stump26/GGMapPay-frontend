@@ -1,13 +1,27 @@
-import axios, { AxiosResponse } from 'axios';
+import { getAround } from '../RedisAPI/redis';
 
+type GET_AROUND_VALUES = {
+  long: number;
+  lat: number;
+};
 const APIURL = 'https://openapi.gg.go.kr/RegionMnyFacltStus?Type=json';
 const resolvers = {
   Query: {
-    requestText: async (): Promise<Array<IStoreInfoType>> => {
-      console.log('hi');
-      const res: AxiosResponse<API_ResponeType> = await axios(APIURL);
-      console.log('res', res.data.RegionMnyFacltStus[1]);
-      return res.data.RegionMnyFacltStus[1].row;
+    getAroundStore: async (_: any, { long, lat }: GET_AROUND_VALUES) => {
+      const aroundInfo: any = await getAround({
+        longitude: long,
+        latitude: lat,
+      });
+
+      const objAroundInfo = aroundInfo.reduce(
+        (acc: Array<IStoreInfoType>, cur: string) => {
+          const objCur = JSON.parse(cur);
+          return [...acc, objCur];
+        },
+        [],
+      );
+      console.log('objAroundInfo', objAroundInfo);
+      return objAroundInfo;
     },
   },
 };

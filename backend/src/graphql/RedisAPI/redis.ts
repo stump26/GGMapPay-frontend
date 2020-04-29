@@ -1,9 +1,29 @@
 import redis from 'redis';
 
+type COORD = {
+  longitude: number;
+  latitude: number;
+};
+
+// conn Redis.
 const client = redis.createClient({
   url: 'redis://localhost:6379',
 });
 
-client.georadius('store', 127.054387, 37.15972047, 50, 'm', (err, store) => {
-  console.log(store); // ['incheon', 'seoul']
-});
+export const getAround = async (coord: COORD) => {
+  return new Promise((resolve, reject) => {
+    client.georadius(
+      'store',
+      coord.latitude,
+      coord.longitude,
+      100,
+      'm',
+      (err, store) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(store);
+      },
+    );
+  });
+};
