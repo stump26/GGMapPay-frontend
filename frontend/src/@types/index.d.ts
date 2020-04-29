@@ -3,7 +3,8 @@ export {};
 declare global {
   interface Window {
     kakao: any;
-    Navigator: ant;
+    Navigator: any;
+    __APOLLO_STATE__: any;
   }
 
   type PositionType = {

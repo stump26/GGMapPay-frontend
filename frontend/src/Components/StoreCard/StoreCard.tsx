@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface Props {
-  StoreID: number;
+  StoreID: string;
   StoreName: string;
   addr: string;
   jibun: string;

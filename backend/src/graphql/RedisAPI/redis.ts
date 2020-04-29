@@ -14,9 +14,9 @@ export const getAround = async (coord: COORD) => {
   return new Promise((resolve, reject) => {
     client.georadius(
       'store',
-      coord.latitude,
       coord.longitude,
-      100,
+      coord.latitude,
+      500,
       'm',
       (err, store) => {
         if (err) {

@@ -12,5 +12,5 @@ type STORE_INFO {
 }
 
 type Query {
-  getAroundStore(lat: Float, long: Float): [STORE_INFO]
+  getAroundStore(lat: Float!, long: Float!): [STORE_INFO]
 }

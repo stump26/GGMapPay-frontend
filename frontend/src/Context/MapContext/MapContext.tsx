@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
 const defaultContext: IMapContext = {
   map: undefined,
@@ -18,11 +18,13 @@ const MapContextProvider: React.FC = ({ children }) => {
   });
   const posMove = (map: any): void => {
     const newCenter = map.getCenter();
-    setCenter({
+    const pos: PositionType = {
       latitude: newCenter.Ha,
       longitude: newCenter.Ga,
-    });
+    };
+    setCenter(pos);
   };
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
       console.log(position.coords.latitude, position.coords.longitude);
@@ -32,6 +34,7 @@ const MapContextProvider: React.FC = ({ children }) => {
       });
     });
   }, []);
+
   return (
     <MapContext.Provider
       value={{

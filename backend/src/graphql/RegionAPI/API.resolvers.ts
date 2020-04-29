@@ -8,6 +8,7 @@ const APIURL = 'https://openapi.gg.go.kr/RegionMnyFacltStus?Type=json';
 const resolvers = {
   Query: {
     getAroundStore: async (_: any, { long, lat }: GET_AROUND_VALUES) => {
+      console.log('long, lat', long, lat);
       const aroundInfo: any = await getAround({
         longitude: long,
         latitude: lat,
@@ -20,7 +21,6 @@ const resolvers = {
         },
         [],
       );
-      console.log('objAroundInfo', objAroundInfo);
       return objAroundInfo;
     },
   },

@@ -1,7 +1,7 @@
-import React from 'react';
 import KakaoMap from './Components/KakaoMap';
-import styled from 'styled-components';
+import React from 'react';
 import SearchBar from './Components/SearchBar';
+import styled from 'styled-components';
 
 const FloatContents = styled.div`
   position: absolute;
