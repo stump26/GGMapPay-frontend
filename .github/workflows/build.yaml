@@ -9,6 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: 12.x
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -30,6 +34,8 @@ jobs:
           echo ${{ github.SECRET_ENV }} > .env
 
       - name: Build # React Build
+        env:
+          CI: false
         run: npm run build
 
       - name: Deploy # S3에 배포하기
