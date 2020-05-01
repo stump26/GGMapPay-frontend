@@ -19,8 +19,8 @@ jobs:
       - name: imports SECRET_ENVS
         run: |
           echo ${{ github.SECRET_ENV }} > .env
+
       - name: Build # React Build
-        env:
         run: yarn build
 
       - name: Deploy # S3에 배포하기
