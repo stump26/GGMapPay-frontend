@@ -21,13 +21,4 @@ app.use(morgan('combined'));
 
 gqlServer.applyMiddleware({ app });
 
-const opts = {
-  port: 8080,
-};
-
-app.listen(opts, () => {
-  console.log(`✅  Listening on: http://localhost:${opts.port}`);
-  console.log(
-    `🚀Graphql Server Running at http://localhost:${opts.port}/graphql`,
-  );
-});
+export default app;

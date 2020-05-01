@@ -1,28 +1,29 @@
-import { fileLoader, mergeResolvers, mergeTypes } from 'merge-graphql-schemas';
+import { IResolvers, gql, makeExecutableSchema } from 'apollo-server-express';
 
-import { makeExecutableSchema } from 'graphql-tools';
-import path from 'path';
+import merge from 'lodash/merge';
+import store from './Store';
 
-const logger = {
-  log: (e: string | Error): void => console.log(e),
+const typeDef = gql`
+  scalar JSON
+  scalar Date
+  type Query {
+    _version: String
+  }
+  type Mutation {
+    _empty: String
+  }
+`;
+
+const resolvers: IResolvers = {
+  Query: {
+    _version: () => '1.0',
+  },
+  // Mutation: {},
 };
 
-const resolversArray = fileLoader(path.join(__dirname, './**/*.resolvers.ts'), {
-  recursive: true,
-});
-const resolvers = mergeResolvers(resolversArray);
-
-const typesArray = fileLoader(path.join(__dirname, './**/*.schema.graphql'), {
-  recursive: true,
-});
-const typeDefs = mergeTypes(typesArray, {
-  all: true,
-});
-
 const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-  logger,
+  typeDefs: [typeDef, store.typeDef],
+  resolvers: merge(resolvers, store.resolvers),
 });
 
 export default schema;

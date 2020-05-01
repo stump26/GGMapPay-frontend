@@ -23,7 +23,7 @@ const setRedis = (objectData: any) => {
   );
 };
 
-fs.readFile('assets/dummy.csv', 'utf8', function (err, data) {
+fs.readFile('assets/data.csv', 'utf8', function (err, data) {
   if (err) {
     console.error('err', err);
   }

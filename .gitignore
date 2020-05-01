@@ -25,3 +25,11 @@ yarn-error.log*
 # environment file
 .env
 .env.development
+
+# build file
+**/dist
+**/.webpakc
+**/.serverless
+
+# dummy data
+dataParser/assets/data.csv

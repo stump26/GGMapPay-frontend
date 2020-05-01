@@ -76,6 +76,9 @@ const KakaoMap: React.FC = () => {
       onDragEnd={(map: any): void => {
         posMove && posMove(map);
       }}
+      onDragStart={(map: any): void => {
+        setOverlayTarget(undefined);
+      }}
     >
       {markers?.map((mark) => (
         <Marker
