@@ -24,14 +24,12 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-
-      - name: imports SECRET_ENVS
-        run: |
-          echo ${{ github.SECRET_ENV }} > .env
-
+        
       - name: Build # React Build
         env:
           CI: false
+          REACT_APP_KAKAO_JS_KEY: ${{secrets.REACT_APP_KAKAO_JS_KEY}}
+          REACT_APP_BACKEND_URI: ${{secrets.REACT_APP_BACKEND_URI}}
         run: npm run build
 
       - name: Deploy
