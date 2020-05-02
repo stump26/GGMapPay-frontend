@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
+
+import { MapContext } from '~/Context/MapContext';
 
 type EventList =
   | 'onClick'
@@ -21,15 +23,29 @@ interface IMarkerProps {
   onRightClick?: any;
   onDragStart?: any;
   onDragEnd?: any;
+  onClustererClick?: any;
+  onClusterOver?: any;
+  onClusterOut?: any;
+  onClusterDoubleClick?: any;
+  onClusterRightClick?: any;
+  onClustered?: any;
 }
 
-const allEvents: Events = {
+const allMarkerEvents: Events = {
   onClick: 'click',
   onMouseOver: 'mouseover',
   onMouseOut: 'mouseout',
   onRightClick: 'rightclick',
   onDragStart: 'dragstart',
   onDragEnd: 'dragend',
+};
+const clusterMarkerEvents: Events = {
+  onClustererClick: 'clusterclick',
+  onClusterOver: 'clusterover',
+  onClusterOut: 'clusterout',
+  onClusterDoubleClick: 'clusterdblclick',
+  onClusterRightClick: 'clusterrightclick',
+  onClustered: 'clustered',
 };
 
 interface IMarkerEvent {
@@ -38,7 +54,8 @@ interface IMarkerEvent {
   handler: any;
 }
 const Marker: React.FC<IMarkerProps> = (props) => {
-  const [isDrawn, updateIsDrawn] = React.useState(false);
+  const [isDrawn, updateIsDrawn] = useState(false);
+  const { clustererM } = useContext(MapContext);
   const { map, pos } = props;
   const { kakao } = window;
 
@@ -55,9 +72,10 @@ const Marker: React.FC<IMarkerProps> = (props) => {
     if (map && !isDrawn) {
       updateIsDrawn(true);
 
-      marker.setMap(map);
+      // marker.setMap(map);
+      clustererM && clustererM.addMarker(marker);
 
-      for (let [key, value] of Object.entries(allEvents)) {
+      for (let [key, value] of Object.entries(allMarkerEvents)) {
         if (props.hasOwnProperty(key)) {
           kakao.maps.event.addListener(marker, value, () => {
             const handler = props[key as EventList](map, marker);
@@ -71,8 +89,23 @@ const Marker: React.FC<IMarkerProps> = (props) => {
         }
       }
 
+      for (let [key, value] of Object.entries(clusterMarkerEvents)) {
+        if (props.hasOwnProperty(key)) {
+          kakao.maps.event.addListener(clustererM, value, () => {
+            const handler = props[key as EventList](map, clustererM);
+            events.push({
+              target: map,
+              type: value,
+              handler,
+            });
+            return handler;
+          });
+        }
+      }
+
       return () => {
-        marker.setMap(null);
+        // marker.setMap(null);
+        clustererM && clustererM.clear();
         events.map((event) => {
           kakao.maps.event.removeListener(
             event.target,

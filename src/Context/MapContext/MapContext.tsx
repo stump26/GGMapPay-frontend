@@ -12,10 +12,22 @@ const MapContextProvider: React.FC = ({ children }) => {
   const [mapInnerContents, setMapinnerContents] = useState<
     React.ReactElement | undefined
   >(undefined);
+  const [clustererM, setClusterM] = useState();
   const [center, setCenter] = useState<PositionType>({
     latitude: 33.450701,
     longitude: 126.570667,
   });
+
+  const setMapHandle = (map: any): void => {
+    setMap(map);
+    const clusterer = new window.kakao.maps.MarkerClusterer({
+      map: map,
+      averageCenter: true,
+      minLevel: 0,
+    });
+    setClusterM(clusterer);
+  };
+
   const posMove = (map: any): void => {
     const newCenter = map.getCenter();
     const pos: PositionType = {
@@ -27,7 +39,6 @@ const MapContextProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
-      console.log(position.coords.latitude, position.coords.longitude);
       setCenter({
         longitude: position.coords.longitude,
         latitude: position.coords.latitude,
@@ -39,11 +50,12 @@ const MapContextProvider: React.FC = ({ children }) => {
     <MapContext.Provider
       value={{
         map,
-        setMap,
+        setMapHandle,
         center,
         posMove,
         mapInnerContents,
         setMapinnerContents,
+        clustererM,
       }}
     >
       {children}

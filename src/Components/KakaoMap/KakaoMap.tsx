@@ -17,14 +17,13 @@ const MapContainer = styled(Map)`
 `;
 
 const KakaoMap: React.FC = () => {
-  const { map, setMap, center, posMove } = useContext(MapContext);
+  const { map, setMapHandle, center, posMove } = useContext(MapContext);
   const { markers, setMarkers } = useContext(MarkerContext);
   const [overlayTarget, setOverlayTarget] = useState<IMarker>();
   const [getAround] = useLazyQuery(GET_AROUND_CENTER_QUERY, {
     onCompleted: (data) => {
       const transformed = data.getAroundStore.reduce(
         (acc: Array<IMarker>, cur: any) => {
-          console.log('KakaoMap:React.FC -> cur', cur);
           const newobj: IMarker = {
             MarkerID: onewayID(7),
             StoreName: cur.CMPNM_NM,
@@ -50,13 +49,12 @@ const KakaoMap: React.FC = () => {
         variables: { lat: center.latitude, long: center.longitude },
       });
     }
-  }, [center]);
+  }, [center, getAround]);
 
   const handleMarkerClick = (mark: IMarker) => {
     setOverlayTarget(mark);
   };
 
-  console.log('KakaoMap:React.FC -> markers', markers);
   return (
     <MapContainer
       id="MapContainer"
@@ -71,7 +69,7 @@ const KakaoMap: React.FC = () => {
         latitude: center?.latitude,
       }}
       onMapLoaded={(map: any): void => {
-        setMap(map);
+        setMapHandle && setMapHandle(map);
       }}
       onDragEnd={(map: any): void => {
         posMove && posMove(map);
