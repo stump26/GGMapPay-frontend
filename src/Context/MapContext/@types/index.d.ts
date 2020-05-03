@@ -1,8 +1,9 @@
 interface IMapContext {
   map: any;
-  setMap?: React.Dispatch;
+  setMapHandle?: (map: any) => void;
   center?: PositionType;
   posMove?: (map: any) => void;
   mapInnerContents?: React.ReactElement;
   setMapinnerContents?: React.Dispatch;
+  clustererM?: any;
 }
