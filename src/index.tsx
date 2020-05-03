@@ -2,23 +2,16 @@ import './index.css';
 
 import * as serviceWorker from './serviceWorker';
 
-import ApolloClient from './graphql/ApolloClient';
-import { ApolloProvider } from '@apollo/react-hooks';
 import App from './App';
-import { MapContextProvider } from '~/Context/MapContext';
-import { MarkerContextProvider } from '~/Context/MarkerContext';
+import Provider from './Provider';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ApolloProvider client={ApolloClient}>
-      <MapContextProvider>
-        <MarkerContextProvider>
-          <App />
-        </MarkerContextProvider>
-      </MapContextProvider>
-    </ApolloProvider>
+    <Provider>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

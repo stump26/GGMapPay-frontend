@@ -5,6 +5,7 @@ import { GET_AROUND_CENTER_QUERY } from '~/graphql/api';
 import { MapContext } from '~/Context/MapContext';
 import Marker from '~/Components/MapMarker';
 import { MarkerContext } from '~/Context/MarkerContext';
+import { ModalContext } from '~/Context/ModalContext';
 import StoreCard from '~/Components/StoreCard';
 import { onewayID } from '~/utils/hashid';
 import { renderToString } from 'react-dom/server';
@@ -19,6 +20,7 @@ const MapContainer = styled(Map)`
 const KakaoMap: React.FC = () => {
   const { map, setMapHandle, center, posMove } = useContext(MapContext);
   const { markers, setMarkers } = useContext(MarkerContext);
+  const { toggleVisible } = useContext(ModalContext);
   const [overlayTarget, setOverlayTarget] = useState<IMarker>();
   const [getAround] = useLazyQuery(GET_AROUND_CENTER_QUERY, {
     onCompleted: (data) => {
@@ -68,12 +70,8 @@ const KakaoMap: React.FC = () => {
         longitude: center?.longitude,
         latitude: center?.latitude,
       }}
-      onMapLoaded={(map: any): void => {
-        setMapHandle && setMapHandle(map);
-      }}
-      onDragEnd={(map: any): void => {
-        posMove && posMove(map);
-      }}
+      onMapLoaded={setMapHandle}
+      onDragEnd={posMove}
       onDragStart={(map: any): void => {
         setOverlayTarget(undefined);
       }}
@@ -83,6 +81,9 @@ const KakaoMap: React.FC = () => {
           map={map}
           onClick={(map: any, marker: any) => {
             handleMarkerClick(mark);
+          }}
+          onClusterDoubleClick={(cluster: any) => {
+            console.log(mark);
           }}
           key={`marker${mark.MarkerID}`}
           pos={{

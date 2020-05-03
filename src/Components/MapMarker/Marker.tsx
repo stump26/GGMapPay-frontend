@@ -75,6 +75,7 @@ const Marker: React.FC<IMarkerProps> = (props) => {
       // marker.setMap(map);
       clustererM && clustererM.addMarker(marker);
 
+      // set Marker Events
       for (let [key, value] of Object.entries(allMarkerEvents)) {
         if (props.hasOwnProperty(key)) {
           kakao.maps.event.addListener(marker, value, () => {
@@ -89,10 +90,11 @@ const Marker: React.FC<IMarkerProps> = (props) => {
         }
       }
 
+      // set ClusterMarker Events
       for (let [key, value] of Object.entries(clusterMarkerEvents)) {
         if (props.hasOwnProperty(key)) {
-          kakao.maps.event.addListener(clustererM, value, () => {
-            const handler = props[key as EventList](map, clustererM);
+          kakao.maps.event.addListener(clustererM, value, (cluster: any) => {
+            const handler = props[key as EventList](cluster);
             events.push({
               target: map,
               type: value,
