@@ -1,8 +1,8 @@
 type IModal = React.ReactElement;
 
 interface IModalContext {
-  modal?: IModal;
-  setModal?: React.Dispatch;
+  modalContent?: IModal;
+  updateModalContent?: React.Dispatch;
   isVisible: boolean;
   toggleVisible: () => void;
 }

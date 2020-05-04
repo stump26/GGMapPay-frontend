@@ -1,8 +1,10 @@
 import React, { createContext, useState } from 'react';
 
+import { useBetterCallback } from '~/utils/Hooks';
+
 const defaultContext: IModalContext = {
-  modal: undefined,
-  setModal: undefined,
+  modalContent: undefined,
+  updateModalContent: undefined,
   isVisible: false,
   toggleVisible: () => {
     return;
@@ -12,16 +14,17 @@ const defaultContext: IModalContext = {
 const ModalContext = createContext(defaultContext);
 
 const ModalContextProvider: React.FC = ({ children }) => {
-  const [modal, setModal] = useState<IModal>();
+  const [modalContent, updateModalContent] = useState<IModal>();
   const [isVisible, setVisible] = useState(false);
 
-  const toggleVisible = () => {
-    setVisible(!isVisible);
-  };
+  const toggleVisible = useBetterCallback(
+    ([isVisible]: any) => {
+      setVisible(!isVisible);
+    },
+    [isVisible],
+  );
   return (
-    <ModalContext.Provider
-      value={{ modal, setModal, isVisible, toggleVisible }}
-    >
+    <ModalContext.Provider value={{ modalContent, updateModalContent, isVisible, toggleVisible }}>
       {children}
     </ModalContext.Provider>
   );

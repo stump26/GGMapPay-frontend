@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "GGPPayMap",
+  "name": "경기 지역화폐 가맹점 지도",
   "icons": [
     {
       "src": "favicon.ico",

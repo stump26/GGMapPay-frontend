@@ -1,12 +1,13 @@
 import { Map, Overlay } from 'kakao-map-react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useContext, useEffect, useState } from 'react';
 
 import { GET_AROUND_CENTER_QUERY } from '~/graphql/api';
 import { MapContext } from '~/Context/MapContext';
-import Marker from '~/Components/MapMarker';
 import { MarkerContext } from '~/Context/MarkerContext';
+import Markers from '~/Components/MapMarkers';
 import { ModalContext } from '~/Context/ModalContext';
 import StoreCard from '~/Components/StoreCard';
+import StoreList from '~/Components/StoreList';
 import { onewayID } from '~/utils/hashid';
 import { renderToString } from 'react-dom/server';
 import styled from 'styled-components';
@@ -18,32 +19,42 @@ const MapContainer = styled(Map)`
 `;
 
 const KakaoMap: React.FC = () => {
-  const { map, setMapHandle, center, posMove } = useContext(MapContext);
+  const { map, setMapHandle, center, posMove, clustererM } = useContext(MapContext);
   const { markers, setMarkers } = useContext(MarkerContext);
-  const { toggleVisible } = useContext(ModalContext);
+  const { toggleVisible, updateModalContent } = useContext(ModalContext);
   const [overlayTarget, setOverlayTarget] = useState<IMarker>();
   const [getAround] = useLazyQuery(GET_AROUND_CENTER_QUERY, {
-    onCompleted: (data) => {
-      const transformed = data.getAroundStore.reduce(
-        (acc: Array<IMarker>, cur: any) => {
-          const newobj: IMarker = {
-            MarkerID: onewayID(7),
-            StoreName: cur.CMPNM_NM,
-            addr: cur.REFINE_ROADNM_ADDR,
-            jibun: cur.REFINE_LOTNO_ADDR,
-            telno: cur.TELNO,
-            latlng: {
-              latitude: cur.REFINE_WGS84_LAT,
-              longitude: cur.REFINE_WGS84_LOGT,
-            },
-          };
-          return [...acc, newobj];
-        },
-        [],
-      );
+    onCompleted: async (data) => {
+      const transformed = await data.getAroundStore.reduce((acc: Array<IMarker>, cur: any) => {
+        const newobj: IMarker = {
+          MarkerID: onewayID(7),
+          StoreName: cur.CMPNM_NM,
+          addr: cur.REFINE_ROADNM_ADDR,
+          jibun: cur.REFINE_LOTNO_ADDR,
+          telno: cur.TELNO,
+          latlng: {
+            latitude: cur.REFINE_WGS84_LAT,
+            longitude: cur.REFINE_WGS84_LOGT,
+          },
+        };
+        return [...acc, newobj];
+      }, []);
       setMarkers(transformed);
     },
   });
+
+  const clusterClickHandler = useCallback(
+    (cluster: any) => {
+      const markers = cluster._markers as Array<any>;
+      if (markers) {
+        const markInfos = markers?.map((mark) => mark.info) as Array<IMarker>;
+        toggleVisible();
+        const Element = <StoreList title="Store List" datas={markInfos} />;
+        updateModalContent(Element);
+      }
+    },
+    [toggleVisible, updateModalContent],
+  );
 
   useEffect(() => {
     if (center) {
@@ -51,7 +62,16 @@ const KakaoMap: React.FC = () => {
         variables: { lat: center.latitude, long: center.longitude },
       });
     }
-  }, [center, getAround]);
+    if (clustererM) {
+      window.kakao.maps.event?.addListener(clustererM, 'clusterclick', clusterClickHandler);
+    }
+    return () => {
+      if (clustererM) {
+        window.kakao.maps.event.removeListener(clustererM, 'clusterclick', clusterClickHandler);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [center, clustererM]);
 
   const handleMarkerClick = (mark: IMarker) => {
     setOverlayTarget(mark);
@@ -76,22 +96,13 @@ const KakaoMap: React.FC = () => {
         setOverlayTarget(undefined);
       }}
     >
-      {markers?.map((mark) => (
-        <Marker
-          map={map}
-          onClick={(map: any, marker: any) => {
-            handleMarkerClick(mark);
-          }}
-          onClusterDoubleClick={(cluster: any) => {
-            console.log(mark);
-          }}
-          key={`marker${mark.MarkerID}`}
-          pos={{
-            longitude: mark.latlng.longitude,
-            latitude: mark.latlng.latitude,
-          }}
-        />
-      ))}
+      <Markers
+        map={map}
+        data={markers}
+        onClick={(mark: IMarker) => {
+          handleMarkerClick(mark);
+        }}
+      />
       {overlayTarget ? (
         <Overlay
           key={overlayTarget.MarkerID}
