@@ -1,5 +1,6 @@
 import ApolloClient from './graphql/ApolloClient';
 import { ApolloProvider } from '@apollo/react-hooks';
+import { LoadingContextProvider } from '~/Context/LoadingContext';
 import { MapContextProvider } from '~/Context/MapContext';
 import { MarkerContextProvider } from '~/Context/MarkerContext';
 import { ModalContextProvider } from '~/Context/ModalContext';
@@ -11,7 +12,9 @@ const Provider: React.FC = ({ children }) => {
       <ApolloProvider client={ApolloClient}>
         <MapContextProvider>
           <MarkerContextProvider>
-            <ModalContextProvider>{children}</ModalContextProvider>
+            <ModalContextProvider>
+              <LoadingContextProvider>{children}</LoadingContextProvider>
+            </ModalContextProvider>
           </MarkerContextProvider>
         </MapContextProvider>
       </ApolloProvider>

@@ -1,8 +1,31 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import Dropdown from '~/Components/Dropdown';
+import { GET_SEARCH_STORE_QUERY } from '~/graphql/querys';
 import { IC_SEARCH } from '~/utils/icon';
+import { LoadingContext } from '~/Context/LoadingContext';
+import { ModalContext } from '~/Context/ModalContext';
+import SearchReasult from '~/Components/SearchReasult';
+import { onewayID } from '~/utils/hashid';
 import styled from 'styled-components';
+import { useBetterCallback } from '~/utils/Hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
+
+interface FetchMoreOptions {
+  updateQuery: (
+    previousQueryResult: {
+      [key: string]: any;
+    },
+    options: {
+      fetchMoreResult?: {
+        [key: string]: any;
+      };
+      variables: {
+        [key: string]: any;
+      };
+    },
+  ) => Object;
+}
 
 const Container = styled.div`
   width: 37vw;
@@ -95,17 +118,87 @@ const SIGUNCODE = {
 const SearchBar = () => {
   const [sigun, setSigun] = useState<string>();
   const [sigunCode, setSigunCode] = useState<string>();
+  const [searchQuery, setSearchQuery] = useState<string>();
+  const [curpage, setCurPage] = useState<number>();
+  const [maxpage, setMaxPage] = useState<number>();
+  const { setModalVisible, updateModalContent } = useContext(ModalContext);
+  const { setLoadingVisible } = useContext(LoadingContext);
+
+  const SearchQueryHandler = async (data: any) => {
+    setCurPage(data.getSearchStore.CUR_PAGE);
+    setMaxPage(data.getSearchStore.TOTAL_PAGE);
+    const transformed = await data.getSearchStore.STORES.reduce((acc: Array<IMarker>, cur: any) => {
+      const newobj: IMarker = {
+        MarkerID: onewayID(7),
+        StoreName: cur.CMPNM_NM,
+        addr: cur.REFINE_ROADNM_ADDR,
+        jibun: cur.REFINE_LOTNO_ADDR,
+        telno: cur.TELNO,
+        latlng: {
+          latitude: cur.REFINE_WGS84_LAT,
+          longitude: cur.REFINE_WGS84_LOGT,
+        },
+      };
+      return [...acc, newobj];
+    }, []);
+    updateModalContent(<SearchReasult datas={transformed} onClickNextPrev={pageHandler} />);
+    setModalVisible && setModalVisible(true);
+    setLoadingVisible(false);
+  };
+
+  const [searchStore, { fetchMore }] = useLazyQuery(GET_SEARCH_STORE_QUERY, {
+    onCompleted: SearchQueryHandler,
+  });
+
+  const pageHandler = useBetterCallback(
+    (method: string, [curpage, maxpage, fetchMore]: any) => {
+      if (method === '<') {
+        if (curpage && curpage !== 1) {
+          fetchMore({
+            variables: { page: curpage - 1 },
+            updateQuery: (prev: any, { fetchMoreResult }: any) => {
+              if (!fetchMoreResult) return prev;
+
+              SearchQueryHandler(fetchMoreResult);
+            },
+          });
+        }
+      } else if (method === '>') {
+        if (curpage && curpage !== maxpage) {
+          fetchMore({
+            variables: { page: curpage + 1 },
+            updateQuery: (prev: any, { fetchMoreResult }: any) => {
+              if (!fetchMoreResult) return prev;
+
+              SearchQueryHandler(fetchMoreResult);
+            },
+          });
+        }
+      }
+    },
+    [curpage, maxpage, fetchMore],
+  );
 
   const handleOptionClick = (e: React.MouseEvent) => {
-    console.log((e.target as HTMLOptionElement).text);
     setSigun((e.target as HTMLOptionElement).text);
     setSigunCode((e.target as HTMLOptionElement).value);
   };
+
+  const handleSearchClick = (e: React.MouseEvent) => {
+    setLoadingVisible(true);
+    searchStore({
+      variables: { query: searchQuery, SIGUN_CD: sigunCode ? parseInt(sigunCode) : undefined },
+    });
+  };
+  const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <Container>
       <SIGUNDropdown keyValue={SIGUNCODE} text={sigun} onOptionClick={handleOptionClick} />
-      <SearchField />
-      <SearchButton>
+      <SearchField onChange={handleSearchFieldChange} />
+      <SearchButton onClick={handleSearchClick}>
         <SearchIcon />
       </SearchButton>
     </Container>

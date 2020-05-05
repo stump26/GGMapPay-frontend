@@ -19,6 +19,7 @@ const ModalContainer = styled.div`
 `;
 
 const ModalBox = styled.div`
+  position: relative;
   min-width: 600px;
   min-height: 30vh;
   max-height: 70vh;
@@ -37,7 +38,7 @@ const ModalBox = styled.div`
 `;
 
 const Modal: React.FC = () => {
-  const { toggleVisible, isVisible, modalContent } = useContext(ModalContext);
+  const { setModalVisible, isModalVisible, modalContent } = useContext(ModalContext);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   function useOutsideAlerter(ref: React.RefObject<HTMLDivElement>) {
@@ -45,7 +46,7 @@ const Modal: React.FC = () => {
       // clicked on outside of element
       function handleClickOutside(event: MouseEvent) {
         if (event.target === ref.current) {
-          toggleVisible();
+          setModalVisible && setModalVisible(false);
         }
       }
       document.addEventListener('click', handleClickOutside);
@@ -58,7 +59,7 @@ const Modal: React.FC = () => {
   useOutsideAlerter(wrapperRef);
 
   return (
-    <ModalContainer visible={isVisible} ref={wrapperRef}>
+    <ModalContainer visible={isModalVisible} ref={wrapperRef}>
       <ModalBox>{modalContent}</ModalBox>
     </ModalContainer>
   );
