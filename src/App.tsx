@@ -1,4 +1,5 @@
 import KakaoMap from './Components/KakaoMap';
+import LodingCurtain from './Components/LodingCurtain';
 import Modal from './Components/Modal';
 import React from 'react';
 import SearchBar from './Components/SearchBar';
@@ -27,6 +28,7 @@ function App() {
           <SearchBar />
         </FloatContents>
         <Modal />
+        <LodingCurtain />
       </MapContainer>
     </div>
   );

@@ -1,7 +1,7 @@
 import { Map, Overlay } from 'kakao-map-react';
-import React, { ReactElement, useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
-import { GET_AROUND_CENTER_QUERY } from '~/graphql/api';
+import { GET_AROUND_CENTER_QUERY } from '~/graphql/querys';
 import { MapContext } from '~/Context/MapContext';
 import { MarkerContext } from '~/Context/MarkerContext';
 import Markers from '~/Components/MapMarkers';
@@ -21,7 +21,7 @@ const MapContainer = styled(Map)`
 const KakaoMap: React.FC = () => {
   const { map, setMapHandle, center, posMove, clustererM } = useContext(MapContext);
   const { markers, setMarkers } = useContext(MarkerContext);
-  const { toggleVisible, updateModalContent } = useContext(ModalContext);
+  const { setModalVisible, updateModalContent } = useContext(ModalContext);
   const [overlayTarget, setOverlayTarget] = useState<IMarker>();
   const [getAround] = useLazyQuery(GET_AROUND_CENTER_QUERY, {
     onCompleted: async (data) => {
@@ -48,12 +48,12 @@ const KakaoMap: React.FC = () => {
       const markers = cluster._markers as Array<any>;
       if (markers) {
         const markInfos = markers?.map((mark) => mark.info) as Array<IMarker>;
-        toggleVisible();
+        setModalVisible && setModalVisible(true);
         const Element = <StoreList title="Store List" datas={markInfos} />;
         updateModalContent(Element);
       }
     },
-    [toggleVisible, updateModalContent],
+    [setModalVisible, updateModalContent],
   );
 
   useEffect(() => {

@@ -38,7 +38,7 @@ const ItemBody = styled.div`
   }
 `;
 
-const StoreItem: React.FC<StoreItemProps> = ({ data }) => {
+export const StoreItem: React.FC<StoreItemProps> = ({ data }) => {
   return (
     <ItemBody>
       <div className="store-title">{data.StoreName}</div>
@@ -49,15 +49,13 @@ const StoreItem: React.FC<StoreItemProps> = ({ data }) => {
   );
 };
 
-const StoreList: React.FC<StoreListProps> = ({ title, datas }) => {
+export const StoreList: React.FC<StoreListProps> = ({ title, datas }) => {
   return (
     <>
       <ListHeader>{title}</ListHeader>
       {datas.map((data) => (
-        <StoreItem data={data} />
+        <StoreItem key={data.MarkerID} data={data} />
       ))}
     </>
   );
 };
-
-export default StoreList;

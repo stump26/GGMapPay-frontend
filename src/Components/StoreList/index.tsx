@@ -1,3 +1,5 @@
-import StoreList from './StoreList';
+import { StoreItem, StoreList } from './StoreList';
+
+export { StoreItem };
 
 export default StoreList;
