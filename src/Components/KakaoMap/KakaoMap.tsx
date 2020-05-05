@@ -1,5 +1,5 @@
 import { Map, Overlay } from 'kakao-map-react';
-import React, { ReactElement, useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { GET_AROUND_CENTER_QUERY } from '~/graphql/api';
 import { MapContext } from '~/Context/MapContext';
