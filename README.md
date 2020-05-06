@@ -8,8 +8,8 @@
 - [Frontend](./frontend)
   - React, Typescript
 - [Backend](https://github.com/stump26/GGMapPay-backend)
-  - Typescript, GraphQL, serverless(aws lambda)
-- [DataParser](./dataParser)
+  - Typescript, GraphQL, serverless
+- [DataParser](https://github.com/stump26/GGMapPay-backend/dataParser)
   - Typescript
 
 ---
